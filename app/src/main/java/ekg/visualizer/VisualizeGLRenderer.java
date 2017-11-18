@@ -56,7 +56,7 @@ public class VisualizeGLRenderer implements GLSurfaceView.Renderer {
         long tmp = System.currentTimeMillis();
         this.passed += tmp - this.last;
 
-        this.rotation.setY(this.rotation.getY() - 3.14f/10000.0f * passed);
+        //this.rotation.setY(this.rotation.getY() - 3.14f/10000.0f * passed);
         if(this.rotation.getY() < -6.28)
             this.rotation.setY(0.0f);
 
@@ -124,5 +124,27 @@ public class VisualizeGLRenderer implements GLSurfaceView.Renderer {
     {
         this.vectors.clear();
     }
+
+    public Vector3 getRotation() { return this.rotation; }
+
+    public void setRotation(float x, float y, float z) { this.rotation.setX(x); this.rotation.setY(y); this.rotation.setZ(z); }
+
+    private float degToRad(float deg) { return  360.0f/(2.0f*(float)Math.PI) * deg; }
+
+    public void setRotationDeg(float x, float y, float z) { this.rotation.setX(degToRad(x)); this.rotation.setY(degToRad(y)); this.rotation.setZ(degToRad(z)); }
+
+    public Vector3 getCenter() { return this.center; }
+
+    public void setCenter(float x, float y, float z) { this.center.setX(x); this.center.setY(y); this.center.setZ(z); }
+
+    public void setCenter(Vector3 center) { this.center = center; }
+
+    public float getZoom() { return this.zoom; }
+
+    public void setZoom(float zoom) { this.zoom = zoom; }
+
+    public float getCubeScale() { return this.cubeScale; }
+
+    public void setCubeScale(float cubeScale) { this.cubeScale = cubeScale; }
 
 }
