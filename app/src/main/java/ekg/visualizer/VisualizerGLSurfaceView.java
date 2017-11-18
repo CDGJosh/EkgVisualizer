@@ -21,4 +21,6 @@ public class VisualizerGLSurfaceView extends GLSurfaceView {
         // Set the Renderer for drawing on the GLSurfaceView
         setRenderer(mRenderer);
     }
+
+    public VisualizeGLRenderer getRenderer() { return  this.mRenderer; }
 }
