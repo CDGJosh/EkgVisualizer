@@ -30,6 +30,7 @@ public class GLCube {
                     "uniform vec3 rotation;"+
                     "uniform float scale;"+
                     "uniform float zoom;"+
+                    "uniform float zClamp;"+
                     "void main() {" +
                             "float yang = 0.0;"+//785;"+
                             "float xang = 0.0;"+
@@ -40,6 +41,7 @@ public class GLCube {
                             "mat4 xrot =    mat4( 1.0, 0.0, 0.0, 0.0,    0.0, cos(rotation.x), sin(rotation.x), 0.0,    0.0, - sin(rotation.x), cos(rotation.x), 0.0,    0.0, 0.0, 0.0, 1.0);"+
                             "mat4 rot = xrot * yrot;"+
                     "  gl_Position =  z* rot * trans  * scaling *vec4(vertex.x, vertex.y, vertex.z, 1.0);" +
+                    "if(zClamp > 0.0) { gl_Position.z = min(max(gl_Position.z, 0.001), 1.0);}"+
                     "}";
 
     private final String cubeFSSrc  =
@@ -58,15 +60,19 @@ public class GLCube {
     public GLCube()
     {
 
+    }
+
+    public void init() {
+
         float[] cubeVertex = new float[]{
                 -1.0f, -1.0f, 1.0f,  //Bottom Left   0
-                 1.0f, -1.0f, 1.0f,  //Bottom Right  1
-                 1.0f,  1.0f, 1.0f,  //Top Right     2
+                1.0f, -1.0f, 1.0f,  //Bottom Right  1
+                1.0f,  1.0f, 1.0f,  //Top Right     2
                 -1.0f,  1.0f, 1.0f,  //Top left      3
 
                 -1.0f, -1.0f, -1.0f, //Bottom Left   4
-                 1.0f, -1.0f, -1.0f, //Bottom Right  5
-                 1.0f,  1.0f, -1.0f, //Top Right     6
+                1.0f, -1.0f, -1.0f, //Bottom Right  5
+                1.0f,  1.0f, -1.0f, //Top Right     6
                 -1.0f,  1.0f, -1.0f  //Top left      7
         };
 
@@ -204,6 +210,9 @@ public class GLCube {
     private int vertexAttribLocation = -1;
     private int zoomAttribLocation = -1;
 
+
+    private int zClampUniformLocation = -1;
+
     private static final int POINTS_PER_VERTEX = 3;
 
     public void drawAt(float x, float y, float z, float xrot, float yrot, float zrot, float cx, float cy, float cz, float scale, float zoom)
@@ -230,6 +239,9 @@ public class GLCube {
         if(this.zoomAttribLocation == -1)
             this.zoomAttribLocation = glGetUniformLocation(this.shader, "zoom");
 
+        if(this.zClampUniformLocation == -1)
+            this.zClampUniformLocation = glGetUniformLocation(this.shader, "zClamp");
+
         if(this.vertexAttribLocation == -1)
             this.vertexAttribLocation = glGetAttribLocation(this.shader,"vertex");
 
@@ -242,6 +254,8 @@ public class GLCube {
         glUniform3f(this.centerUniformLocation, cx,cy,cz);
         glUniform1f(this.scaleUniformLocation, scale);
         glUniform1f(this.zoomAttribLocation, zoom);
+
+        glUniform1f(this.zClampUniformLocation, 0.0f);
 
 
         glBindBuffer(GL_ARRAY_BUFFER, this.vertexVBO);
@@ -270,9 +284,9 @@ public class GLCube {
         glUniform4f(this.colorUniformLocation, 0.0f, 1.0f, 1.0f, 0.6f);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 30); // RIGHT
         */
-        glUniform4f(this.colorUniformLocation, 1.0f, 1.0f, 1.0f, 0.8f);
+        glUniform4f(this.colorUniformLocation, this.cubeColor.getR(), this.cubeColor.getG(), this.cubeColor.getB(), this.cubeColor.getA());
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, 0);
-        glUniform4f(this.colorUniformLocation, 0.0f, 0.0f, 0.0f, 1.0f);
+        glUniform4f(this.colorUniformLocation, this.cubeOutlineColor.getR(), this.cubeOutlineColor.getG(), this.cubeOutlineColor.getB(), this.cubeOutlineColor.getA());
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.outlineIndicesVBO);
         glLineWidth(100.0f * scale);
@@ -284,4 +298,227 @@ public class GLCube {
 
 
     }
+
+    public void drawOutlineAt(float x, float y, float z, float xrot, float yrot, float zrot, float cx, float cy, float cz, float scale, float zoom)
+    {
+
+        glUseProgram(this.shader);
+
+
+        if(this.colorUniformLocation == -1)
+            this.colorUniformLocation = glGetUniformLocation(this.shader, "color");
+
+        if(this.positionUniformLocation == -1)
+            this.positionUniformLocation = glGetUniformLocation(this.shader, "position");
+
+        if(this.scaleUniformLocation == -1)
+            this.scaleUniformLocation = glGetUniformLocation(this.shader, "scale");
+
+        if(this.centerUniformLocation == -1)
+            this.centerUniformLocation = glGetUniformLocation(this.shader, "center");
+
+        if(this.rotationUniformLocation == -1)
+            this.rotationUniformLocation = glGetUniformLocation(this.shader, "rotation");
+
+        if(this.zoomAttribLocation == -1)
+            this.zoomAttribLocation = glGetUniformLocation(this.shader, "zoom");
+
+
+        if(this.zClampUniformLocation == -1)
+            this.zClampUniformLocation = glGetUniformLocation(this.shader, "zClamp");
+
+        if(this.vertexAttribLocation == -1)
+            this.vertexAttribLocation = glGetAttribLocation(this.shader,"vertex");
+
+
+        glUniform3f(this.positionUniformLocation, x,y,z);
+
+        glUniform3f(this.rotationUniformLocation, xrot,yrot,zrot);
+
+        glUniform3f(this.centerUniformLocation, cx,cy,cz);
+        glUniform1f(this.scaleUniformLocation, scale);
+        glUniform1f(this.zoomAttribLocation, zoom);
+
+        glUniform1f(this.zClampUniformLocation, 1.0f);
+
+        glBindBuffer(GL_ARRAY_BUFFER, this.vertexVBO);
+        glEnableVertexAttribArray(this.vertexAttribLocation);
+        glVertexAttribPointer(this.vertexAttribLocation, POINTS_PER_VERTEX, GL_FLOAT, false, 0,0);
+
+        glUniform4f(this.colorUniformLocation, this.singleOutlineColor.getR(), this.singleOutlineColor.getG(), this.singleOutlineColor.getB(), this.singleOutlineColor.getA());
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.outlineIndicesVBO);
+        glLineWidth(6.0f);
+        glDepthFunc( GL_ALWAYS);
+        glDrawElements(GL_LINES, 48, GL_UNSIGNED_BYTE, 0);
+
+        //glUniform1f(this.scaleUniformLocation, scale + 0.001f);
+        //glDrawArrays(GL_LINES, 0, 36);
+
+
+    }
+
+
+
+    private float byteColorToGLColor(int i) { return (1.0f/255.0f) * (float)i;}
+
+    private Vector4 cubeColor = new Vector4(1.0f, 1.0f, 1.0f, 0.8f);
+    private Vector4 cubeOutlineColor = new Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+    private Vector4 singleOutlineColor = new Vector4(0.8f, 0.8f, 0.8f, 2.0f);
+
+    /**
+     * Gets the color of the cube faces
+     *
+     * @return a Vector4 representing the cube color; in GL format
+     * */
+    public Vector4 getCubeColor() { return this.cubeColor; }
+
+    /**
+     * Sets the color of the cube faces
+     *
+     * @param  cubeColor a Vector4 representing the cube color; in GL format
+     * */
+    public void setCubeColor(Vector4 cubeColor) { this.cubeColor = cubeColor; }
+
+    /**
+     * Sets the color of the cube faces in GL format, e.g. every channel has values ranging from 0.0 to 1.0
+     *
+     * @param  r representing the red component of the color; in GL format
+     * @param  g representing the green component of the color; in GL format
+     * @param  b representing the blue component of the color; in GL format
+     * */
+    public void setCubeColor(float r, float g, float b) { this.cubeColor = new Vector4(r,g,b, 1.0f); }
+
+    /**
+     * Sets the color of the cube faces in GL format, e.g. every channel has values ranging from 0.0 to 1.0
+     *
+     * @param  r representing the red component of the color; in GL format
+     * @param  g representing the green component of the color; in GL format
+     * @param  b representing the blue component of the color; in GL format
+     * @param  a representing the alpha component of the color; in GL format
+     * */
+    public void setCubeColor(float r, float g ,float b, float a) { this.cubeColor = new Vector4(r,g,b,a); }
+
+    /**
+     * Sets the color of the cube faces in a more sane (byte) format, e.g. every channel has values ranging from 0 to 255
+     *
+     * @param  r representing the red component of the color; in byte format
+     * @param  g representing the green component of the color; in byte format
+     * @param  b representing the blue component of the color; in byte format
+     * */
+    public void setCubeColor(int r, int g, int b) { this.cubeColor = new Vector4(byteColorToGLColor(r),byteColorToGLColor(g),byteColorToGLColor(b), 1.0f); }
+
+    /**
+     * Sets the color of the cube faces in a more sane (byte) format, e.g. every channel has values ranging from 0 to 255
+     *
+     * @param  r representing the red component of the color; in byte format
+     * @param  g representing the green component of the color; in byte format
+     * @param  b representing the blue component of the color; in byte format
+     * @param  a representing the alpha component of the color; in byte format
+     * */
+    public void setCubeColor(int r, int g ,int b, int a) { this.cubeColor = new Vector4(byteColorToGLColor(r),byteColorToGLColor(g),byteColorToGLColor(b), byteColorToGLColor(a)); }
+
+    /**
+     * Gets the color of the cube outlines
+     *
+     * @return a Vector4 representing the cube outline color; in GL format
+     * */
+    public Vector4 getCubeOutlineColor() { return this.cubeOutlineColor; }
+
+    /**
+     * Sets the color of the cube outlines
+     *
+     * @param  cubeOutlineColor a Vector4 representing the cube outline color; in GL format
+     * */
+    public void setCubeOutlineColor(Vector4 cubeOutlineColor) { this.cubeOutlineColor = cubeOutlineColor; }
+
+    /**
+     * Sets the color of the cube outlines in GL format, e.g. every channel has values ranging from 0.0 to 1.0
+     *
+     * @param  r representing the red component of the color; in GL format
+     * @param  g representing the green component of the color; in GL format
+     * @param  b representing the blue component of the color; in GL format
+     * */
+    public void setCubeOutlineColor(float r, float g, float b) { this.cubeOutlineColor = new Vector4(r,g,b, 1.0f); }
+
+    /**
+     * Sets the color of the cube outlines in GL format, e.g. every channel has values ranging from 0.0 to 1.0
+     *
+     * @param  r representing the red component of the color; in GL format
+     * @param  g representing the green component of the color; in GL format
+     * @param  b representing the blue component of the color; in GL format
+     * @param  a representing the alpha component of the color; in GL format
+     * */
+    public void setCubeOutlineColor(float r, float g ,float b, float a) { this.cubeOutlineColor = new Vector4(r,g,b,a); }
+
+    /**
+     * Sets the color of the cube outlines in a more sane (byte) format, e.g. every channel has values ranging from 0 to 255
+     *
+     * @param  r representing the red component of the color; in byte format
+     * @param  g representing the green component of the color; in byte format
+     * @param  b representing the blue component of the color; in byte format
+     * */
+    public void setCubeOutlineColor(int r, int g, int b) { this.cubeOutlineColor = new Vector4(byteColorToGLColor(r),byteColorToGLColor(g),byteColorToGLColor(b), 1.0f); }
+
+    /**
+     * Sets the color of the cube outlines in a more sane (byte) format, e.g. every channel has values ranging from 0 to 255
+     *
+     * @param  r representing the red component of the color; in byte format
+     * @param  g representing the green component of the color; in byte format
+     * @param  b representing the blue component of the color; in byte format
+     * @param  a representing the alpha component of the color; in byte format
+     * */
+    public void setCubeOutlineColor(int r, int g ,int b, int a) { this.cubeOutlineColor = new Vector4(byteColorToGLColor(r),byteColorToGLColor(g),byteColorToGLColor(b), byteColorToGLColor(a)); }
+    /**
+     * Sets the outline color if drawn as a standalone
+     *
+     * @return  a Vector4 representing the outline color if drawn as a standalone; in GL format
+     * */
+
+    public Vector4 getSingleOutlineColor() { return this.singleOutlineColor; }
+    /**
+     * Sets the outline color if drawn as a standalone
+     *
+     * @param  singleOutlineColor a Vector4 representing the outline color if drawn as a standalone; in GL format
+     * */
+    public void setSingleOutlineColor(Vector4 singleOutlineColor) { this.singleOutlineColor = singleOutlineColor; }
+
+    /**
+     * Sets the color of the outline drawn as a standalone in GL format, e.g. every channel has values ranging from 0.0 to 1.0
+     *
+     * @param  r representing the red component of the color; in GL format
+     * @param  g representing the green component of the color; in GL format
+     * @param  b representing the blue component of the color; in GL format
+     * */
+    public void setSingleOutlineColor(float r, float g, float b) { this.singleOutlineColor = new Vector4(r,g,b, 1.0f); }
+
+    /**
+     * Sets the color of the outline drawn as a standalone in GL format, e.g. every channel has values ranging from 0.0 to 1.0
+     *
+     * @param  r representing the red component of the color; in GL format
+     * @param  g representing the green component of the color; in GL format
+     * @param  b representing the blue component of the color; in GL format
+     * @param  a representing the alpha component of the color; in GL format
+     * */
+    public void setSingleOutlineColor(float r, float g ,float b, float a) { this.singleOutlineColor = new Vector4(r,g,b,a); }
+
+    /**
+     * Sets the color of the outline drawn as a standalone in a more sane (byte) format, e.g. every channel has values ranging from 0 to 255
+     *
+     * @param  r representing the red component of the color; in byte format
+     * @param  g representing the green component of the color; in byte format
+     * @param  b representing the blue component of the color; in byte format
+     * */
+    public void setSingleOutlineColor(int r, int g, int b) { this.singleOutlineColor = new Vector4(byteColorToGLColor(r),byteColorToGLColor(g),byteColorToGLColor(b), 1.0f); }
+
+    /**
+     * Sets the color of the outline drawn as a standalone in a more sane (byte) format, e.g. every channel has values ranging from 0 to 255
+     *
+     * @param  r representing the red component of the color; in byte format
+     * @param  g representing the green component of the color; in byte format
+     * @param  b representing the blue component of the color; in byte format
+     * @param  a representing the alpha component of the color; in byte format
+     * */
+    public void setSingleOutlineColor(int r, int g ,int b, int a) { this.singleOutlineColor = new Vector4(byteColorToGLColor(r),byteColorToGLColor(g),byteColorToGLColor(b), byteColorToGLColor(a)); }
+
 }

@@ -43,6 +43,7 @@ public class VisualizeGLRenderer implements GLSurfaceView.Renderer {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
         this.last = System.currentTimeMillis();
+
     }
 
     @Override
@@ -90,15 +91,21 @@ public class VisualizeGLRenderer implements GLSurfaceView.Renderer {
         glEnable(GL_DEPTH_TEST);
         //glDisable(GL_DEPTH_TEST);
 
-        if(this.cube == null)
+        if(this.cube == null) {
             this.cube = GLCube.getInstance();
+            this.cube.init();
+        }
 
         if(this.axisSystem == null)
             this.axisSystem = GLAxisSystem.getInstance();
 
-        this.axisSystem.drawAt(this.rotation.getX(), this.rotation.getY(), this.rotation.getZ(),
-                               this.center.getX(), this.center.getY(), this.center.getZ(),
-                               this.cubeScale, this.zoom);
+
+
+        this.cube.drawOutlineAt(1.0f,1.0f,1.0f,
+                this.rotation.getX(), this.rotation.getY(), this.rotation.getZ(),
+                this.center.getX(), this.center.getY(), this.center.getZ(),
+                1.0f, this.zoom);
+
         for(int i = 0; i < this.vectors.size(); i++)
         {
             this.cube.drawAt(this.vectors.get(i).getX(),this.vectors.get(i).getY(),this.vectors.get(i).getZ(),
@@ -106,7 +113,6 @@ public class VisualizeGLRenderer implements GLSurfaceView.Renderer {
                              this.center.getX(), this.center.getY(), this.center.getZ(),
                              this.cubeScale, this.zoom);
         }
-
 
     }
 
