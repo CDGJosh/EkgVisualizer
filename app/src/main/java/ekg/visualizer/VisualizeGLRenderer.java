@@ -99,13 +99,6 @@ public class VisualizeGLRenderer implements GLSurfaceView.Renderer {
         if(this.axisSystem == null)
             this.axisSystem = GLAxisSystem.getInstance();
 
-
-
-        this.cube.drawOutlineAt(1.0f,1.0f,1.0f,
-                this.rotation.getX(), this.rotation.getY(), this.rotation.getZ(),
-                this.center.getX(), this.center.getY(), this.center.getZ(),
-                1.0f, this.zoom);
-
         for(int i = 0; i < this.vectors.size(); i++)
         {
             this.cube.drawAt(this.vectors.get(i).getX(),this.vectors.get(i).getY(),this.vectors.get(i).getZ(),
@@ -114,6 +107,10 @@ public class VisualizeGLRenderer implements GLSurfaceView.Renderer {
                              this.cubeScale, this.zoom);
         }
 
+        this.cube.drawOutlineAt(1.0f,1.0f,1.0f,
+                this.rotation.getX(), this.rotation.getY(), this.rotation.getZ(),
+                this.center.getX(), this.center.getY(), this.center.getZ(),
+                1.0f, this.zoom);
     }
 
     /**

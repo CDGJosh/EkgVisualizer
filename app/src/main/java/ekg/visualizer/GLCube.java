@@ -41,7 +41,7 @@ public class GLCube {
                             "mat4 xrot =    mat4( 1.0, 0.0, 0.0, 0.0,    0.0, cos(rotation.x), sin(rotation.x), 0.0,    0.0, - sin(rotation.x), cos(rotation.x), 0.0,    0.0, 0.0, 0.0, 1.0);"+
                             "mat4 rot = xrot * yrot;"+
                     "  gl_Position =  z* rot * trans  * scaling *vec4(vertex.x, vertex.y, vertex.z, 1.0);" +
-                    "if(zClamp > 0.0) { gl_Position.z = min(max(gl_Position.z, 0.001), 1.0);}"+
+                    "if(zClamp > 0.0) { gl_Position.z = min(max(gl_Position.z, -1.0), 1.0); }"+
                     "}";
 
     private final String cubeFSSrc  =
@@ -349,6 +349,7 @@ public class GLCube {
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this.outlineIndicesVBO);
         glLineWidth(6.0f);
+
         glDepthFunc( GL_ALWAYS);
         glDrawElements(GL_LINES, 48, GL_UNSIGNED_BYTE, 0);
 
