@@ -31,6 +31,13 @@ public class MainActivity extends AppCompatActivity {
 
             r.addVector(new Vector3(x, y, z));
         }
+
+        //change color to get completly insane. the urge to puke is big.
+        GLCube.getInstance().setCubeColor(1.0f, 0.0f, 0.0f, 0.8f);
+
+        GLCube.getInstance().setCubeOutlineColor(100, 0, 255, 255);
+
+        GLCube.getInstance().setSingleOutlineColor(new Vector4(0.0f, 1.0f, 0.0f, 1.0f));
     }
 }
 
