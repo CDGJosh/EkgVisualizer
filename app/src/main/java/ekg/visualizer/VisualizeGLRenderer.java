@@ -54,6 +54,18 @@ public class VisualizeGLRenderer implements GLSurfaceView.Renderer {
         this.height = height;
     }
 
+    private int scaleUniformLocation = -1;
+
+    private int centerUniformLocation = -1;
+    private int rotationUniformLocation = -1;
+
+    private int zoomUniformLocation = -1;
+    private int rotMatUniformLocation = -1;
+
+
+    private Matrix4x4 xrot;
+    private Matrix4x4 yrot;
+    private Matrix4x4 rot;
 
     @Override
     public void onDrawFrame(GL10 unused) {
@@ -98,6 +110,45 @@ public class VisualizeGLRenderer implements GLSurfaceView.Renderer {
 
         if(this.axisSystem == null)
             this.axisSystem = GLAxisSystem.getInstance();
+
+        glUseProgram(this.cube.getShader());
+
+        if(this.scaleUniformLocation == -1)
+            this.scaleUniformLocation = glGetUniformLocation(this.cube.getShader(), "scale");
+
+        if(this.centerUniformLocation == -1)
+            this.centerUniformLocation = glGetUniformLocation(this.cube.getShader(), "center");
+
+        if(this.rotationUniformLocation == -1)
+            this.rotationUniformLocation = glGetUniformLocation(this.cube.getShader(), "rotation");
+
+        if(this.zoomUniformLocation == -1)
+            this.zoomUniformLocation = glGetUniformLocation(this.cube.getShader(), "zoom");
+
+        if(this.rotMatUniformLocation == -1)
+            this.rotMatUniformLocation = glGetUniformLocation(this.cube.getShader(), "rot");
+
+        xrot =  new Matrix4x4(1.0f, 0.0f, 0.0f, 0.0f,
+                0.0f, (float)Math.cos(this.rotation.getX()), (float)Math.sin(this.rotation.getX()), 0.0f,
+                0.0f, - (float)Math.sin(this.rotation.getX()), (float)Math.cos(this.rotation.getX()), 0.0f,
+                0.0f, 0.0f, 0.0f, 1.0f);
+
+        yrot =  new Matrix4x4((float)Math.cos(this.rotation.getY()), 0.0f, - (float)Math.sin(this.rotation.getY()), 0.0f,
+                                                                     0.0f, 1.0f,                                0.0f, 0.0f,
+                                        (float)Math.sin(this.rotation.getY()), 0.0f,   (float)Math.cos(this.rotation.getY()), 0.0f,
+                                                                     0.0f, 0.0f, 0.0f, 1.0f);
+
+        rot = xrot.multiply(yrot);
+
+        glUniformMatrix4fv(this.rotMatUniformLocation, 1, true, rot.getUnfiorm(), 0);
+
+
+        //glUniform3f(this.rotationUniformLocation, this.rotation.getX(), this.rotation.getY(), this.rotation.getZ());
+
+        glUniform3f(this.centerUniformLocation, this.center.getX(), this.center.getY(), this.center.getZ());
+        glUniform1f(this.scaleUniformLocation, this.cubeScale);
+        glUniform1f(this.zoomUniformLocation, zoom);
+
 
         for(int i = 0; i < this.vectors.size(); i++)
         {

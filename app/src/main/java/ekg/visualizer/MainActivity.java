@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         r.setCubeScale(0.01f);
 
 
-        for(int i = 0; i < 10000; i++) {
+        for(int i = 0; i < 1000; i++) {
             int val = ThreadLocalRandom.current().nextInt(500, 1499 + 1);
 
             float x = ((float) ThreadLocalRandom.current().nextInt(val / 10 * 9, val / 10 * 11)) / 1000.0f;

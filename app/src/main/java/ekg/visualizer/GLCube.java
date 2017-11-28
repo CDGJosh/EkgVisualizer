@@ -31,6 +31,7 @@ public class GLCube {
                     "uniform float scale;"+
                     "uniform float zoom;"+
                     "uniform float zClamp;"+
+                    "uniform mat4 rot;"+
                     "void main() {" +
                             "float yang = 0.0;"+//785;"+
                             "float xang = 0.0;"+
@@ -39,7 +40,7 @@ public class GLCube {
                             "mat4 z = mat4(zoom,     0.0, 0.0, 0.0,    0.0, zoom,   0.0, 0.0,    0.0, 0.0, zoom,   0.0,    0.0,        0.0,       0.0,        1.0);"+
                             "mat4 yrot =    mat4( cos(rotation.y), 0.0, - sin(rotation.y), 0.0,    0.0, 1.0, 0.0, 0.0,    sin(rotation.y), 0.0, cos(rotation.y), 0.0,    0.0, 0.0, 0.0, 1.0);"+
                             "mat4 xrot =    mat4( 1.0, 0.0, 0.0, 0.0,    0.0, cos(rotation.x), sin(rotation.x), 0.0,    0.0, - sin(rotation.x), cos(rotation.x), 0.0,    0.0, 0.0, 0.0, 1.0);"+
-                            "mat4 rot = xrot * yrot;"+
+                            //"mat4 rot = xrot * yrot;"+
                     "  gl_Position =  z* rot * trans  * scaling *vec4(vertex.x, vertex.y, vertex.z, 1.0);" +
                     "if(zClamp > 0.0) { gl_Position.z = min(max(gl_Position.z, -1.0), 1.0); }"+
                     "}";
@@ -208,7 +209,7 @@ public class GLCube {
     private int rotationUniformLocation = -1;
 
     private int vertexAttribLocation = -1;
-    private int zoomAttribLocation = -1;
+    private int zoomUniformLocation = -1;
 
 
     private int zClampUniformLocation = -1;
@@ -236,8 +237,8 @@ public class GLCube {
         if(this.rotationUniformLocation == -1)
             this.rotationUniformLocation = glGetUniformLocation(this.shader, "rotation");
 
-        if(this.zoomAttribLocation == -1)
-            this.zoomAttribLocation = glGetUniformLocation(this.shader, "zoom");
+        if(this.zoomUniformLocation == -1)
+            this.zoomUniformLocation = glGetUniformLocation(this.shader, "zoom");
 
         if(this.zClampUniformLocation == -1)
             this.zClampUniformLocation = glGetUniformLocation(this.shader, "zClamp");
@@ -249,11 +250,11 @@ public class GLCube {
         glUniform4f(this.colorUniformLocation, 1.0f, 1.0f, 1.0f, 0.8f);
         glUniform3f(this.positionUniformLocation, x,y,z);
 
-        glUniform3f(this.rotationUniformLocation, xrot,yrot,zrot);
+        //glUniform3f(this.rotationUniformLocation, xrot,yrot,zrot);
 
-        glUniform3f(this.centerUniformLocation, cx,cy,cz);
-        glUniform1f(this.scaleUniformLocation, scale);
-        glUniform1f(this.zoomAttribLocation, zoom);
+        //glUniform3f(this.centerUniformLocation, cx,cy,cz);
+        //glUniform1f(this.scaleUniformLocation, scale);
+        //glUniform1f(this.zoomUniformLocation, zoom);
 
         glUniform1f(this.zClampUniformLocation, 0.0f);
 
@@ -320,8 +321,8 @@ public class GLCube {
         if(this.rotationUniformLocation == -1)
             this.rotationUniformLocation = glGetUniformLocation(this.shader, "rotation");
 
-        if(this.zoomAttribLocation == -1)
-            this.zoomAttribLocation = glGetUniformLocation(this.shader, "zoom");
+        if(this.zoomUniformLocation == -1)
+            this.zoomUniformLocation = glGetUniformLocation(this.shader, "zoom");
 
 
         if(this.zClampUniformLocation == -1)
@@ -337,7 +338,7 @@ public class GLCube {
 
         glUniform3f(this.centerUniformLocation, cx,cy,cz);
         glUniform1f(this.scaleUniformLocation, scale);
-        glUniform1f(this.zoomAttribLocation, zoom);
+        glUniform1f(this.zoomUniformLocation, zoom);
 
         glUniform1f(this.zClampUniformLocation, 1.0f);
 
