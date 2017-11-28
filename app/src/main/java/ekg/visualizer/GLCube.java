@@ -38,8 +38,8 @@ public class GLCube {
                             "mat4 trans = mat4(1.0,     0.0, 0.0, 0.0,    0.0, 1.0,   0.0, 0.0,    0.0, 0.0, 1.0,   0.0,    position.x - center.x, position.y - center.y, position.z - center.z, 1.0);"+
                             "mat4 scaling = mat4(scale, 0.0, 0.0, 0.0,    0.0, scale, 0.0, 0.0,    0.0, 0.0, scale, 0.0,    0.0,        0.0,        0.0,        1.0);"+
                             "mat4 z = mat4(zoom,     0.0, 0.0, 0.0,    0.0, zoom,   0.0, 0.0,    0.0, 0.0, zoom,   0.0,    0.0,        0.0,       0.0,        1.0);"+
-                            "mat4 yrot =    mat4( cos(rotation.y), 0.0, - sin(rotation.y), 0.0,    0.0, 1.0, 0.0, 0.0,    sin(rotation.y), 0.0, cos(rotation.y), 0.0,    0.0, 0.0, 0.0, 1.0);"+
-                            "mat4 xrot =    mat4( 1.0, 0.0, 0.0, 0.0,    0.0, cos(rotation.x), sin(rotation.x), 0.0,    0.0, - sin(rotation.x), cos(rotation.x), 0.0,    0.0, 0.0, 0.0, 1.0);"+
+                            //"mat4 yrot =    mat4( cos(rotation.y), 0.0, - sin(rotation.y), 0.0,    0.0, 1.0, 0.0, 0.0,    sin(rotation.y), 0.0, cos(rotation.y), 0.0,    0.0, 0.0, 0.0, 1.0);"+
+                            //"mat4 xrot =    mat4( 1.0, 0.0, 0.0, 0.0,    0.0, cos(rotation.x), sin(rotation.x), 0.0,    0.0, - sin(rotation.x), cos(rotation.x), 0.0,    0.0, 0.0, 0.0, 1.0);"+
                             //"mat4 rot = xrot * yrot;"+
                     "  gl_Position =  z* rot * trans  * scaling *vec4(vertex.x, vertex.y, vertex.z, 1.0);" +
                     "if(zClamp > 0.0) { gl_Position.z = min(max(gl_Position.z, -1.0), 1.0); }"+
