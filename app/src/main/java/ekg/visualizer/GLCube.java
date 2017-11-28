@@ -220,8 +220,6 @@ public class GLCube {
     {
 
         glUseProgram(this.shader);
-
-
         if(this.colorUniformLocation == -1)
             this.colorUniformLocation = glGetUniformLocation(this.shader, "color");
 
@@ -286,6 +284,8 @@ public class GLCube {
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 30); // RIGHT
         */
         glUniform4f(this.colorUniformLocation, this.cubeColor.getR(), this.cubeColor.getG(), this.cubeColor.getB(), this.cubeColor.getA());
+
+
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, 0);
         glUniform4f(this.colorUniformLocation, this.cubeOutlineColor.getR(), this.cubeOutlineColor.getG(), this.cubeOutlineColor.getB(), this.cubeOutlineColor.getA());
 

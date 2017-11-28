@@ -73,6 +73,8 @@ public class VisualizeGLRenderer implements GLSurfaceView.Renderer {
         long tmp = System.currentTimeMillis();
         this.passed += tmp - this.last;
 
+        //long prepStart = System.currentTimeMillis();
+
         if(this.autorotationEnabled[AXIS_X])
             this.rotation.setX(this.rotation.getX() - (this.getAutorotationSpeed().getX()/60000.0f) * passed);
         if(this.rotation.getX() < -6.28 || this.rotation.getX() > 6.28)
@@ -91,6 +93,7 @@ public class VisualizeGLRenderer implements GLSurfaceView.Renderer {
 
         this.last = tmp;
         this.passed = 0;
+
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -128,6 +131,9 @@ public class VisualizeGLRenderer implements GLSurfaceView.Renderer {
         if(this.rotMatUniformLocation == -1)
             this.rotMatUniformLocation = glGetUniformLocation(this.cube.getShader(), "rot");
 
+        //long prepTime = System.currentTimeMillis() - prepStart;
+        //long matStart = System.currentTimeMillis();
+
         xrot =  new Matrix4x4(1.0f, 0.0f, 0.0f, 0.0f,
                 0.0f, (float)Math.cos(this.rotation.getX()), (float)Math.sin(this.rotation.getX()), 0.0f,
                 0.0f, - (float)Math.sin(this.rotation.getX()), (float)Math.cos(this.rotation.getX()), 0.0f,
@@ -140,6 +146,9 @@ public class VisualizeGLRenderer implements GLSurfaceView.Renderer {
 
         rot = xrot.multiply(yrot);
 
+        //long matTime = System.currentTimeMillis() - matStart;
+        //long uniStart = System.currentTimeMillis();
+
         glUniformMatrix4fv(this.rotMatUniformLocation, 1, true, rot.getUnfiorm(), 0);
 
 
@@ -149,7 +158,8 @@ public class VisualizeGLRenderer implements GLSurfaceView.Renderer {
         glUniform1f(this.scaleUniformLocation, this.cubeScale);
         glUniform1f(this.zoomUniformLocation, zoom);
 
-
+        //long uniTime = System.currentTimeMillis() - uniStart;
+        //long drawStart = System.currentTimeMillis();
         for(int i = 0; i < this.vectors.size(); i++)
         {
             this.cube.drawAt(this.vectors.get(i).getX(),this.vectors.get(i).getY(),this.vectors.get(i).getZ(),
@@ -162,6 +172,10 @@ public class VisualizeGLRenderer implements GLSurfaceView.Renderer {
                 this.rotation.getX(), this.rotation.getY(), this.rotation.getZ(),
                 this.center.getX(), this.center.getY(), this.center.getZ(),
                 1.0f, this.zoom);
+
+        //long drawTime = System.currentTimeMillis() - drawStart;
+
+        //System.out.println("pt: "+prepTime + " / mt: "+matTime + " / ut: "+uniTime + " / dt: " + drawTime);
     }
 
     /**
